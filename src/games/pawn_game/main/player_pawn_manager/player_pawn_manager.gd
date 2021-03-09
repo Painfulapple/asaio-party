@@ -49,7 +49,8 @@ func castle_created(tile: Node2D):
 			pawn.queue_free()
 	castle = tile
 	castle_pos = tile.global_position
-	spawn_starting_pawns()
+	if player_id == Network.get_my_id():
+		spawn_starting_pawns()
 	if player_id == Network.get_my_id():
 		emit_signal("my_castle_created")
 #	print("new castle: ", castle_pos)
@@ -125,6 +126,8 @@ remote func receive_pawn_died(pawn_path: String):
 	remove_pawn_null_references()
 
 func remove_pawn_null_references():
+	while null in pawn_reserved_coords:
+		pawn_reserved_coords.erase(null)
 	for pawn in pawns:
 		if pawn == null:
 			pawns.erase(pawn)
@@ -133,12 +136,12 @@ func remove_pawn_null_references():
 			if pawn == null:
 				pawns_by_type[type].erase(pawn)
 
-func get_reserved_coords(excluded: Array = []) -> Array:
+func get_reserved_coords(excluded: PoolVector2Array = []) -> PoolVector2Array:
 	if excluded.empty():
-		return pawn_reserved_coords.values()
-	var coords: Array = []
+		return pawn_reserved_coords.values() as PoolVector2Array
+	var coords: PoolVector2Array = []
 	for pawn in pawn_reserved_coords:
-		if not pawn in excluded:
+		if not pawn_reserved_coords[pawn] in excluded:
 			coords.append(pawn_reserved_coords[pawn])
 	return coords
 

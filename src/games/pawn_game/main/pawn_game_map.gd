@@ -25,7 +25,7 @@ func _ready():
 
 # warning-ignore:unused_argument
 func _process(delta):
-	#for _i in 5:
+	for _i in 5:
 		if place_tile_queue.empty():
 			return
 		var args: Array = place_tile_queue.pop_front()
