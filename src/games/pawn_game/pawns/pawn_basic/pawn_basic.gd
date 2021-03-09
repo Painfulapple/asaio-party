@@ -73,6 +73,7 @@ func _physics_process(delta):
 		workProgress += delta
 		update_work_bar()
 		if workProgress > 10:
+			print("worked")
 			emit_signal("worked","Gold")
 			workProgress = 0
 

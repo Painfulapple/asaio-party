@@ -61,6 +61,7 @@ func pawn_purchased():
 
 func update_resource(resource: String, amount: int):
 	resources[resource] += amount
+	print("main")
 	emit_signal("resource_updated", resource, get_resource_amount(resource))
 
 func get_resource_amount(resource: String) -> int:

@@ -7,6 +7,7 @@ func _ready():
 	pass # Replace with function body.
 
 func update_resource(resource: String, value: int):
+	print("UI")
 	match resource:
 		"Gold":
 			update_gold(value)
