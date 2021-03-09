@@ -30,6 +30,8 @@ var pawns: Array = []
 # list of all coords pawns should be moving towards
 var pos_targets: Array = []
 
+# pawn_controller node in main scene
+var pawn_controller: Node2D
 # pawn_game_map node in main scene
 var pawn_game_map: Node2D
 
@@ -94,7 +96,10 @@ func gen_order(pos: Vector2, tile: Node2D) -> PawnOrder:
 
 func get_pos_targets(amount: int = pawns.size()) -> Array:
 	var targets: Array = []
+	if amount == 0:
+		return targets
 	
+	var excluded: Array = pawn_controller.get_reserved_coords(pawns)
 	var rounded_pos: Vector2 = pawn_game_map.round_pos(order_pos)
 	
 	match pathing_type:
@@ -102,13 +107,13 @@ func get_pos_targets(amount: int = pawns.size()) -> Array:
 			if not use_tile_groups:
 				var walkable_tiles: Dictionary = pawn_game_map.get_adjacent_walkable_tiles(rounded_pos, edge_includes_diagonal)
 				var walkable_coords: Array = walkable_tiles.keys()
-				var coords: Array = []
-				for i in amount:
+				#var coords: Array = []
+				#for i in amount:
 					# if there are more pawns than walkable tiles, roll over the count
-					coords.append(walkable_coords[i % walkable_coords.size()])
-				return coords
+					#coords.append(walkable_coords[i % walkable_coords.size()])
+				return walkable_coords#coords
 			var tile_group: Dictionary = pawn_game_map.get_tile_type_group(rounded_pos, tile_node.type)
-			var walkable_tiles: Dictionary = pawn_game_map.get_adjacent_walkable_tiles_of_group(tile_group, edge_includes_diagonal)
+			var walkable_tiles: Dictionary = pawn_game_map.get_adjacent_walkable_tiles_of_group(tile_group, edge_includes_diagonal, excluded)
 			return walkable_tiles.keys()
 		PATHING_TYPES.CENTER:
 			if not use_tile_groups:
@@ -118,9 +123,9 @@ func get_pos_targets(amount: int = pawns.size()) -> Array:
 						coords.append(rounded_pos)
 					return coords
 				else:
-					var walkable_tiles: Dictionary = pawn_game_map.get_x_walkable_tiles(rounded_pos, amount, edge_includes_diagonal)
+					var walkable_tiles: Dictionary = pawn_game_map.get_x_walkable_tiles(rounded_pos, amount, edge_includes_diagonal, excluded)
 					return walkable_tiles.keys()
-			var tile_group: Dictionary = pawn_game_map.get_tile_type_group(rounded_pos, tile_node.type)
+			var tile_group: Dictionary = pawn_game_map.get_tile_type_group(rounded_pos, tile_node.type, excluded)
 			return tile_group.keys()
 		PATHING_TYPES.POINTER:
 			if not use_tile_groups:
@@ -133,7 +138,7 @@ func get_pos_targets(amount: int = pawns.size()) -> Array:
 				return [order_pos]
 			# get walkable tiles around coord, get perfect amount for the number of pawns
 			# 	this order has
-			var walkable_tiles: Dictionary = pawn_game_map.get_x_walkable_tiles(rounded_pos, amount)
+			var walkable_tiles: Dictionary = pawn_game_map.get_x_walkable_tiles(rounded_pos, amount, edge_includes_diagonal, excluded)
 			return walkable_tiles.keys()
 	return targets
 

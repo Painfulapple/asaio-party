@@ -7,6 +7,8 @@ onready var nav: Navigation2D = get_parent()
 onready var map: Node2D = get_node("../pawn_game_map")
 #onready var pawn_scene: PackedScene = load(pawn_scene_path)
 
+export var starting_pawn_amount: int = 25
+
 var player_pawn_manager_scene: PackedScene = load("res://games/pawn_game/main/player_pawn_manager/player_pawn_manager.tscn")
 
 var selected_pawns: Array = []
@@ -25,7 +27,7 @@ var managers: Dictionary = {}
 var health_sync_delay: float = 1.0
 var time_since_health_sync: float = 0.0
 
-# warning-ignore:unused_signal
+signal my_castle_created
 #signal command_issued(command_data)
 
 # Called when the node enters the scene tree for the first time.
@@ -86,6 +88,7 @@ func new_order(order: PawnOrder, pawns: Array = selected_pawns.duplicate()):
 # generally initiates orders (gives order info to create commands + issues commands to pawns)
 # both for orders created locally and received remotely
 func init_order(order: PawnOrder, pawns: Array):
+	order.pawn_controller = self
 	order.pawn_game_map = map
 	for pawn in pawns:
 		if pawn == null:
@@ -128,6 +131,14 @@ remote func receive_order(order_data: Dictionary, pawn_paths: Array):
 		pawns.append(pawn)
 	init_order(order, pawns)
 
+func get_reserved_coords(excluded: Array = []) -> Array:
+	# only gets tiles reserved by your pawns because you will just fight enemy ones
+	return get_my_manager().get_reserved_coords(excluded)
+#	var reserved: Array = []
+#	for manager in managers.values():
+#		reserved += manager.get_reserved_coords(excluded)
+#	return reserved
+
 func issue_command(pawn: KinematicBody2D, command: PawnCommand):
 	# if pawn don't exist
 	if pawn == null:
@@ -152,21 +163,7 @@ func deselect_pawns(pawns: Array):
 		pawn.set_selected(false)
 
 func get_pawns_between(pos1: Vector2, pos2: Vector2, error_margin: int = 10) -> Array:
-	var pawns: Array = []
-	var top_left: Vector2 = Vector2(min(pos1.x, pos2.x) - error_margin, min(pos1.y, pos2.y) - error_margin)
-	var bot_right: Vector2 = Vector2(max(pos1.x, pos2.x) + error_margin, max(pos1.y, pos2.y) + error_margin)
-	for pawn in get_my_pawns():
-		var pos: Vector2 = pawn.global_position
-		if pos.x < top_left.x:
-			continue
-		if pos.y < top_left.y:
-			continue
-		if pos.x > bot_right.x:
-			continue
-		if pos.y > bot_right.y:
-			continue
-		pawns.append(pawn)
-	return pawns
+	return get_my_manager().get_pawns_between(pos1, pos2, error_margin)
 
 puppetsync func create_pawn_managers(physics_layers: Dictionary = player_physics_layers):
 	for player_id in physics_layers.keys():
@@ -181,11 +178,16 @@ puppetsync func create_pawn_managers(physics_layers: Dictionary = player_physics
 		manager.connect("pawn_deselected", self, "pawn_deselected")
 # warning-ignore:return_value_discarded
 		manager.connect("pawn_died", self, "pawn_died")
+# warning-ignore:return_value_discarded
+		manager.connect("my_castle_created", self, "my_castle_created")
 		managers[player_id] = manager
 		add_child(manager)
 
 func get_my_pawns() -> Array:
-	return get_node(str(Network.get_my_id())).get_children()
+	return get_my_manager().get_all_pawns()
+
+func get_my_manager():
+	return managers[Network.get_my_id()]
 
 func pawn_selected(pawn: Node):
 	#print("pawn selected: ", pawn)
@@ -199,3 +201,6 @@ func pawn_deselected(pawn: Node):
 
 func pawn_died(pawn: Node):
 	selected_pawns.erase(pawn)
+
+func my_castle_created():
+	emit_signal("my_castle_created")

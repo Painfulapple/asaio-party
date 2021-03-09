@@ -6,6 +6,7 @@ class_name TileType
 # editor options using export --------------------------------------------------
 export (String) var type
 export (String, MULTILINE) var desc
+export var player_accessible: bool = false
 # whether or not a pawn can walk through this tile
 export var walkable: bool
 # whether or not this tile is destructible

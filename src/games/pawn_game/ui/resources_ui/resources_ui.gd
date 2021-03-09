@@ -1,10 +1,10 @@
 extends VBoxContainer
 
+onready var pawn_game_ui: CanvasLayer = get_parent().get_parent()
 onready var gold_label: Label = $gold
 
-# Called when the node enters the scene tree for the first time.
 func _ready():
-	pass # Replace with function body.
+	pawn_game_ui.connect("resource_updated", self, "update_resource")
 
 func update_resource(resource: String, value: int):
 	print("UI")

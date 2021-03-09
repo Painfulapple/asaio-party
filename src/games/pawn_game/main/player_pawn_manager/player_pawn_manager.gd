@@ -4,6 +4,8 @@ onready var controller: Node2D = get_parent()
 onready var main: Node2D = controller.main
 var map: Node2D
 
+var basic_pawn_scene = load("res://games/pawn_game/pawns/pawn_basic/pawn_basic.tscn")
+
 var player_id: int
 var physics_layer: int
 
@@ -18,11 +20,13 @@ var pawns_by_type: Dictionary = {}
 
 var pawns_created: int = 0
 
-var basic_pawn_scene = load("res://games/pawn_game/pawns/pawn_basic/pawn_basic.tscn")
+# node: coord
+var pawn_reserved_coords: Dictionary = {}
 
 signal pawn_selected(pawn)
 signal pawn_deselected(pawn)
 signal pawn_died(pawn)
+signal my_castle_created
 
 func _ready():
 	if map == null:
@@ -32,21 +36,33 @@ func _ready():
 # warning-ignore:return_value_discarded
 	main.connect("pawn_purchased", self, "pawn_purchased")
 	set_network_master(player_id)
-	if is_network_master():
-		for _i in 50:
-			create_pawn(Vector2(rand_range(50, 974), rand_range(50, 550)))
+#	if is_network_master():
+#		for _i in 50:
+#			create_pawn(Vector2(rand_range(50, 974), rand_range(50, 550)))
 
 func castle_created(tile: Node2D):
 	if tile.player_id != player_id:
 		return
+	if castle != null:
+		map.tile_destroyed(castle)
+		for pawn in get_all_pawns():
+			pawn.queue_free()
 	castle = tile
 	castle_pos = tile.global_position
-	print("new castle: ", castle_pos)
+	spawn_starting_pawns()
+	if player_id == Network.get_my_id():
+		emit_signal("my_castle_created")
+#	print("new castle: ", castle_pos)
 
 func pawn_purchased():
 	if castle == null or castle_pos == null:
 		return
 	create_pawn(castle_pos)
+
+func spawn_starting_pawns(amount: int = controller.starting_pawn_amount):
+	var positions: Array = map.get_x_walkable_tiles(castle_pos, amount).keys()
+	for pos in positions:
+		create_pawn(pos)
 
 func create_pawn(pos: Vector2, type: int = PAWN_TYPES.BASIC):
 	var new_pawn: KinematicBody2D = get_pawn_scene(type).instance()
@@ -65,20 +81,30 @@ func create_pawn(pos: Vector2, type: int = PAWN_TYPES.BASIC):
 	pawns_by_type[type].append(new_pawn)
 	new_pawn.set_network_master(player_id)
 # warning-ignore:return_value_discarded
+	new_pawn.connect("transitioned", self, "pawn_transitioned", [new_pawn])
+# warning-ignore:return_value_discarded
 	new_pawn.connect("selected", self, "pawn_selected", [new_pawn])
 # warning-ignore:return_value_discarded
 	new_pawn.connect("deselected", self, "pawn_deselected", [new_pawn])
 # warning-ignore:return_value_discarded
 	new_pawn.connect("died", self, "pawn_died", [new_pawn])
-	new_pawn.connect("worked",self, "pawn_worked")
+	if player_id == Network.get_my_id():
+# warning-ignore:return_value_discarded
+		new_pawn.connect("worked",self, "pawn_worked")
 	add_child(new_pawn)
 	new_pawn.global_position = pos
+	pawn_reserved_coords[new_pawn] = pos
 	if is_network_master():
 		rpc("receive_create_pawn", pos, type)
 
 puppet func receive_create_pawn(pos: Vector2, type: int):
 	#print("received create pawn")
 	create_pawn(pos, type)
+
+# warning-ignore:unused_argument
+func pawn_transitioned(old_state: int, new_state: int, pawn: KinematicBody2D):
+	if new_state == pawn.states.MOVING:
+		pawn_reserved_coords[pawn] = pawn.get_nav_target()
 
 func pawn_died(pawn: KinematicBody2D):
 	emit_signal("pawn_died", pawn)
@@ -87,7 +113,7 @@ func pawn_died(pawn: KinematicBody2D):
 	remove_pawn_null_references()
 	
 func pawn_worked(resource):
-	print("manager")
+#	update_resource(resource)
 	main.update_resource(resource,1)
 
 remote func receive_pawn_died(pawn_path: String):
@@ -106,6 +132,15 @@ func remove_pawn_null_references():
 		for pawn in pawns_by_type[type]:
 			if pawn == null:
 				pawns_by_type[type].erase(pawn)
+
+func get_reserved_coords(excluded: Array = []) -> Array:
+	if excluded.empty():
+		return pawn_reserved_coords.values()
+	var coords: Array = []
+	for pawn in pawn_reserved_coords:
+		if not pawn in excluded:
+			coords.append(pawn_reserved_coords[pawn])
+	return coords
 
 func get_pawn_scene(type: int) -> PackedScene:
 	match type:

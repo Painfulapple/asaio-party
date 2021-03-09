@@ -15,16 +15,11 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="preview_tiles" type="Node2D" parent="."]
-
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
-layer = 4
-
-[node name="tile_buttons" parent="CanvasLayer" instance=ExtResource( 2 )]
+[node name="tile_buttons" parent="." instance=ExtResource( 2 )]
 anchor_top = 0.9
 margin_top = 5.0
 
-[node name="save_load" type="HBoxContainer" parent="CanvasLayer"]
+[node name="save_load" type="HBoxContainer" parent="."]
 anchor_top = 0.9
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -38,7 +33,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="save_button" type="Button" parent="CanvasLayer/save_load"]
+[node name="save_button" type="Button" parent="save_load"]
 margin_left = 917.0
 margin_right = 958.0
 margin_bottom = 45.0
@@ -47,13 +42,13 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="load_button" type="Button" parent="CanvasLayer/save_load"]
+[node name="load_button" type="Button" parent="save_load"]
 margin_left = 962.0
 margin_right = 1004.0
 margin_bottom = 45.0
 text = "Load"
 
-[node name="save_file_dia" type="FileDialog" parent="CanvasLayer"]
+[node name="save_file_dia" type="FileDialog" parent="."]
 anchor_left = 0.2
 anchor_top = 0.2
 anchor_right = 0.8
@@ -68,7 +63,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="load_file_dia" type="FileDialog" parent="CanvasLayer"]
+[node name="load_file_dia" type="FileDialog" parent="."]
 anchor_left = 0.2
 anchor_top = 0.2
 anchor_right = 0.8
@@ -79,7 +74,7 @@ access = 2
 filters = PoolStringArray( "*.json" )
 current_dir = "/Documents/Godot/Godot Projects/asaio-party/src"
 current_path = "/Documents/Godot/Godot Projects/asaio-party/src/"
-[connection signal="pressed" from="CanvasLayer/save_load/save_button" to="." method="_on_save_button_pressed"]
-[connection signal="pressed" from="CanvasLayer/save_load/load_button" to="." method="_on_load_button_pressed"]
-[connection signal="file_selected" from="CanvasLayer/save_file_dia" to="." method="_on_FileDialog_file_selected"]
-[connection signal="file_selected" from="CanvasLayer/load_file_dia" to="." method="_on_load_file_dia_file_selected"]
+[connection signal="pressed" from="save_load/save_button" to="." method="_on_save_button_pressed"]
+[connection signal="pressed" from="save_load/load_button" to="." method="_on_load_button_pressed"]
+[connection signal="file_selected" from="save_file_dia" to="." method="_on_FileDialog_file_selected"]
+[connection signal="file_selected" from="load_file_dia" to="." method="_on_load_file_dia_file_selected"]

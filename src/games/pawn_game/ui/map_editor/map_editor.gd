@@ -7,9 +7,9 @@ export var map_path: NodePath
 onready var main: Node2D = get_node(main_path)
 onready var pawn_game_ui: CanvasLayer = get_node(pawn_game_ui_path)
 onready var tile_resources: Dictionary = get_tile_resources()
-onready var tile_buttons: Node = $CanvasLayer/tile_buttons
+onready var tile_buttons: Node = $tile_buttons
 onready var map: Node = get_node(map_path)
-onready var preview_tiles_node: Node = $preview_tiles
+#onready var preview_tiles_node: Node = $preview_tiles
 
 var selected: String = ""
 
@@ -23,7 +23,9 @@ signal preview_tiles(tile_coords, type)
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	print(tile_resources)
+	#print(tile_resources)
+	if main.release_mode:
+		$save_load.hide()
 # warning-ignore:return_value_discarded
 	tile_buttons.connect("type_selected", self, "type_selected")
 # warning-ignore:return_value_discarded
@@ -69,8 +71,12 @@ func _gui_input(event):
 		BUTTON_MIDDLE:
 			pass
 
+func close_editor():
+	type_deselected(selected)
+	hide()
+
 func type_selected(type: String):
-	print("selected")
+	#print("selected")
 	selected = type
 	#preview_tile = gen_preview_tile(type)
 	mouse_filter = MOUSE_FILTER_STOP
@@ -78,14 +84,20 @@ func type_selected(type: String):
 
 # warning-ignore:unused_argument
 func type_deselected(type: String):
-	print("deselected")
+	#print("deselected")
 	selected = ""
 	emit_signal("preview_tiles", [], selected)
 	mouse_filter = MOUSE_FILTER_IGNORE
 	#grab_focus()
 
 func get_tile_resources():
-	return main.get_tile_resources()
+	var resources: Dictionary = main.get_tile_resources()
+	var actual: Dictionary = {}
+	if main.release_mode:
+		for type in resources:
+			if resources[type].player_accessible:
+				actual[type] = resources[type]
+	return actual
 
 func get_tile_positions(start_pos: Vector2, end_pos: Vector2, step: int = 20):
 	start_pos = round_pos(start_pos)

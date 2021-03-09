@@ -40,6 +40,7 @@ given_item = ""
 script = ExtResource( 1 )
 type = "Castle"
 desc = ""
+player_accessible = true
 walkable = false
 destructible = true
 health = 500

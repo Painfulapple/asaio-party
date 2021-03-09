@@ -3,18 +3,18 @@
 [ext_resource path="res://games/pawn_game/resources/tiletype/tiletype.gd" type="Script" id=1]
 [ext_resource path="res://assets/common/textures/square.png" type="Texture" id=2]
 
-
 [resource]
 script = ExtResource( 1 )
 type = "Wood"
 desc = ""
+player_accessible = false
 walkable = false
 destructible = false
-interactions/interactable = true
-interactions/resource = "Wood"
-interactions/work = false
-interactions/work_all_adjacent = false
-interactions/deconstruct = true
+health = 100
+damage_pawns = false
+damage = 20
+interactable = false
+orders = [  ]
 texture/texture = ExtResource( 2 )
 texture/modulate = Color( 0.6, 0.933333, 0, 1 )
 texture/scale = Vector2( 4, 4 )

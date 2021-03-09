@@ -1,8 +1,10 @@
 extends Node2D
 
 export (String, DIR) var tile_resource_dir = "res://games/pawn_game/map_components/tiles/tile_resources/"
+export var release_mode: bool = true
 
 onready var map: Node2D = $pawn_game_nav/pawn_game_map
+onready var pawn_controller: Node2D = $pawn_game_nav/pawn_controller
 onready var world_ui: Node2D = $world_ui
 onready var pawn_game_ui: CanvasLayer = $pawn_game_ui
 onready var editor: Control = pawn_game_ui.map_editor
@@ -18,6 +20,7 @@ signal new_order(order)
 signal box_selection_completed(start, end)
 signal pawn_purchased
 signal resource_updated(resource, value)
+signal my_castle_created
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -35,6 +38,8 @@ func _ready():
 	editor.connect("tile_placed", self, "tile_placed")
 # warning-ignore:return_value_discarded
 	editor.connect("preview_tiles", self, "preview_tiles")
+# warning-ignore:return_value_discarded
+	pawn_controller.connect("my_castle_created", self, "my_castle_created")
 	map.load_default_json()
 
 func tile_placed(pos, type):
@@ -58,6 +63,9 @@ func box_selection_completed(start: Vector2, end: Vector2):
 
 func pawn_purchased():
 	emit_signal("pawn_purchased")
+
+func my_castle_created():
+	emit_signal("my_castle_created")
 
 func update_resource(resource: String, amount: int):
 	resources[resource] += amount

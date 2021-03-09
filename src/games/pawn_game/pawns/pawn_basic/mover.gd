@@ -7,7 +7,7 @@ export var pawn_path: NodePath = ".."
 
 onready var pawn: KinematicBody2D = get_node(pawn_path)
 
-var path: PoolVector2Array
+var path: PoolVector2Array = []
 var target: Vector2
 
 var pos_dif_history: PoolIntArray

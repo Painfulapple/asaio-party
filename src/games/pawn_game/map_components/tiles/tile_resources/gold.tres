@@ -7,9 +7,11 @@
 [sub_resource type="Resource" id=1]
 script = ExtResource( 3 )
 order_name = "Mine Gold"
+available_for = 0
 pawn_movement = true
 pathing_type = 0
 use_tile_groups = true
+no_pawn_limit = false
 edge_includes_diagonal = false
 work_amount = 10
 replaces_tile = false
@@ -21,6 +23,7 @@ given_item = "Gold"
 script = ExtResource( 1 )
 type = "Gold"
 desc = ""
+player_accessible = false
 walkable = false
 destructible = false
 health = 100

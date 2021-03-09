@@ -88,9 +88,10 @@ pawn_game_ui_path = NodePath("..")
 map_path = NodePath("../../pawn_game_nav/pawn_game_map")
 
 [node name="shop_ui" parent="pawn_game_ui" instance=ExtResource( 13 )]
-anchor_top = 0.8
+visible = false
+anchor_top = 0.9
 margin_left = 10.0
-margin_top = 10.0
+margin_top = 5.0
 margin_right = -10.0
 margin_bottom = -10.0
 mouse_filter = 2

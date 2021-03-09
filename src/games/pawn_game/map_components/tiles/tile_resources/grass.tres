@@ -7,6 +7,7 @@
 [sub_resource type="Resource" id=1]
 script = ExtResource( 3 )
 order_name = "Move to Grass"
+available_for = 0
 pawn_movement = true
 pathing_type = 2
 use_tile_groups = true
@@ -22,6 +23,7 @@ given_item = ""
 script = ExtResource( 1 )
 type = "Grass"
 desc = ""
+player_accessible = false
 walkable = true
 destructible = false
 health = 100
