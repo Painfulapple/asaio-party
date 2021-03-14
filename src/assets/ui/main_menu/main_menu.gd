@@ -1,19 +1,21 @@
 extends Control
 
+onready var color_picker: ColorPicker = $ColorPicker
+
 func _ready():
 	#hide dropper in ColorPicker
-	get_node("ColorPicker/@@11/@@13").hide()
+	color_picker.get_children()[1].get_children()[1].hide()
 	#give color rect literally any fucking height
-	get_node("ColorPicker/@@11/@@12").rect_min_size.y = 30
+	color_picker.get_children()[1].get_children()[0].rect_min_size.y = 25
 
 func _on_Button_pressed():
 	if $name.text != "":
 		Network.myName = $name.text
-		Network.myColor = $ColorPicker.color
+		Network.myColor = color_picker.color
 		Network.client($ip.text)
 
 func _on_hostButton_pressed():
 	if $name.text != "":
 		Network.myName = $name.text
-		Network.myColor = $ColorPicker.color
+		Network.myColor = color_picker.color
 		Network.host()

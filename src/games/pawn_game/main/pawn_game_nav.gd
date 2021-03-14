@@ -69,14 +69,14 @@ func random_path() -> PoolVector2Array:
 
 func path(start_coord: Vector2 = start, end_coord: Vector2 = end)-> PoolVector2Array:
 	return astar_nav.path(start_coord, end_coord)
-	# offset MUST be uneven, otherwise this workaround don't werk
-	var offset: Vector2 = Vector2(0.0001, 0)
-	# adding tiny amount because for some reason you can't path to the center of a tile
-	var path: PoolVector2Array = get_simple_path(start_coord, end_coord + offset, true)
-	if path.size() > 0:
-		# subtracting that amount here to make it even once again
-		path[-1] -= offset
-	return path
+#	# offset MUST be uneven, otherwise this workaround don't werk
+#	var offset: Vector2 = Vector2(0.0001, 0)
+#	# adding tiny amount because for some reason you can't path to the center of a tile
+#	var path: PoolVector2Array = get_simple_path(start_coord, end_coord + offset, true)
+#	if path.size() > 0:
+#		# subtracting that amount here to make it even once again
+#		path[-1] -= offset
+#	return path
 
 func request_path_to(pos: Vector2, pawn: Node2D):
 	queued_pathing.append([pawn, pos, true])

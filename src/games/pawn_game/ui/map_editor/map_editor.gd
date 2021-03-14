@@ -92,11 +92,12 @@ func type_deselected(type: String):
 
 func get_tile_resources():
 	var resources: Dictionary = main.get_tile_resources()
+	if not main.release_mode:
+		return resources
 	var actual: Dictionary = {}
-	if main.release_mode:
-		for type in resources:
-			if resources[type].player_accessible:
-				actual[type] = resources[type]
+	for type in resources:
+		if resources[type].player_accessible:
+			actual[type] = resources[type]
 	return actual
 
 func get_tile_positions(start_pos: Vector2, end_pos: Vector2, step: int = 20):
@@ -130,10 +131,10 @@ func _on_FileDialog_file_selected(path):
 	file.close()
 
 func _on_save_button_pressed():
-	$CanvasLayer/save_file_dia.popup()
+	$save_file_dia.popup()
 
 func _on_load_button_pressed():
-	$CanvasLayer/load_file_dia.popup()
+	$load_file_dia.popup()
 
 func _on_load_file_dia_file_selected(path):
 	var file = File.new()

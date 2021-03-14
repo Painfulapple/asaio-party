@@ -117,7 +117,7 @@ func _player_disconnected(id):
 
 func _server_disconnected():
 # warning-ignore:return_value_discarded
-	get_tree().change_scene_to(load("res://assets/UI/mainMenu/mainMenu.tscn"))
+	get_tree().change_scene_to(load("res://assets/ui/main_menu/main_menu.tscn"))
 
 func get_peers():
 	return clients

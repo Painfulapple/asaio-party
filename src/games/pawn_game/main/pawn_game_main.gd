@@ -40,7 +40,7 @@ func _ready():
 	editor.connect("preview_tiles", self, "preview_tiles")
 # warning-ignore:return_value_discarded
 	pawn_controller.connect("my_castle_created", self, "my_castle_created")
-	map.load_default_json()
+#	map.load_default_json()
 
 func tile_placed(pos, type):
 	#print("main tile placed")

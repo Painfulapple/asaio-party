@@ -4,6 +4,7 @@ onready var pawn_game_ui: CanvasLayer = get_parent().get_parent()
 onready var gold_label: Label = $gold
 
 func _ready():
+# warning-ignore:return_value_discarded
 	pawn_game_ui.connect("resource_updated", self, "update_resource")
 
 func update_resource(resource: String, value: int):

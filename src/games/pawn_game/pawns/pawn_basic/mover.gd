@@ -65,7 +65,7 @@ func get_travel_vec(delta: float, targ: Vector2 = target, from: Vector2 = global
 
 func check_if_at_target(targ: Vector2 = target, from: Vector2 = global_position) -> bool:
 	return targ == from
-	return (targ / inaccuracy_denom).round() == (from / inaccuracy_denom).round()
+	#return (targ / inaccuracy_denom).round() == (from / inaccuracy_denom).round()
 
 func check_if_moving(pos_dif: Vector2) -> bool:
 	if pos_dif_history.size() > 4:

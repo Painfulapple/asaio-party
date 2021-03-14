@@ -2,8 +2,10 @@ extends Node2D
 
 export var main_path: NodePath
 export(String, FILE, "*.tres") var default_map_json = "res://games/pawn_game/maps/test_map.tres"
+export var tiles_per_frame: int = 10
 
 onready var main: Node2D = get_node(main_path)
+onready var generator: Node2D = get_node("../map_generator")
 onready var tile_resources: Dictionary = main.get_tile_resources()
 
 # {Vector2: tile type name}
@@ -22,10 +24,12 @@ func _ready():
 	main.connect("tile_placed", self, "tile_placed")
 # warning-ignore:return_value_discarded
 	main.connect("interaction_selected", self, "interaction_selected")
+# warning-ignore:return_value_discarded
+	generator.connect("map_generated", self, "map_generated")
 
 # warning-ignore:unused_argument
 func _process(delta):
-	for _i in 5:
+	for _i in tiles_per_frame:
 		if place_tile_queue.empty():
 			return
 		var args: Array = place_tile_queue.pop_front()
@@ -35,6 +39,10 @@ func tile_placed(pos: Vector2, type: String):
 	queue_place_tile(pos, type, Network.get_my_id())
 	#place_tile(pos, type, Network.get_my_id())
 	rpc("receive_place_tile", pos, type, Network.get_my_id())
+
+func map_generated(map_coord_type: Dictionary):
+	for coord in map_coord_type:
+		queue_place_tile(coord, map_coord_type[coord], 0)
 
 func queue_place_tile(pos, type, player_id):
 	var args: Array = []

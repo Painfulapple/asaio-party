@@ -121,7 +121,7 @@ func damage_objects(objects: Array, delta: float):
 			objects.erase(object)
 	if objects.empty():
 		return
-	var dmg: float = calc_damage(delta) / objects.size()
+	var dmg: float = calc_damage(delta)# / objects.size()
 	for object in objects:
 #		if object.has_method("calc_damage"):
 #			damage(object.calc_damage(delta))
@@ -199,6 +199,10 @@ func set_selected(_selected: bool):
 
 func set_path(new_path):
 	#print("received path: ", new_path)
+	if new_path.empty():
+		nav_target = global_position
+		command = null
+		return
 	nav_target = new_path[-1]
 	mover.path = new_path
 	transition(states.MOVING)

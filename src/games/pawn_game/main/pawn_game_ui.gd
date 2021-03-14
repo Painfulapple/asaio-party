@@ -27,7 +27,7 @@ func _ready():
 # warning-ignore:return_value_discarded
 	shop_ui.connect("pawn_purchased", self, "pawn_purchased")
 # warning-ignore:return_value_discarded
-	interact_popup.connect("interaction_selected", self, "interaction_selected")
+	#interact_popup.connect("interaction_selected", self, "interaction_selected")
 # warning-ignore:return_value_discarded
 	interact_popup.connect("new_order", self, "new_order")
 # warning-ignore:return_value_discarded
@@ -61,6 +61,7 @@ func resource_updated(resource, value):
 	emit_signal("resource_updated", resource, value)
 
 func my_castle_created():
-	map_editor.close_editor()
-	map_editor.hide()
+	if main.release_mode:
+		map_editor.close_editor()
+		map_editor.hide()
 	shop_ui.show()

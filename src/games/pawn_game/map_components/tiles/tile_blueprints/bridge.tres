@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=3 format=2]
+
+[ext_resource path="res://games/pawn_game/resources/tileblueprint/tileblueprint.gd" type="Script" id=1]
+[ext_resource path="res://games/pawn_game/map_components/tiles/tile_resources/bridge.tres" type="Resource" id=2]
+
+[resource]
+script = ExtResource( 1 )
+create_tile = ExtResource( 2 )
+buildable_on = [ "Grass" ]
+work = 10
+resource_cost = {
+"Gold": 0
+}

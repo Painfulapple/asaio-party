@@ -5,7 +5,7 @@ onready var map: Node2D = get_node("../pawn_game_map")
 # {coordinate: astar id}
 var coord_ids: Dictionary = {}
 
-var astar: AStar2D = AStar2D.new()
+var astar: AStar2D = AStar2D.new()#load("res://games/pawn_game/resources/astar/basic_astar/basic_astar.gd").new()
 
 func _ready():
 # warning-ignore:return_value_discarded
@@ -27,8 +27,11 @@ func path(start: Vector2, end: Vector2):
 	var start_id: int = astar.get_closest_point(start)
 	var end_id: int = astar.get_closest_point(end)
 	var astar_path: PoolVector2Array = astar.get_point_path(start_id, end_id)
+	if astar_path.empty():
+		return astar_path
 	if astar_path[-1] != end:
 		astar_path.append(end)
+#	create_line(astar_path)
 	return astar_path
 
 func add_coord(coord: Vector2, weight: float = 1.0):
@@ -57,8 +60,8 @@ func connect_coords(from: Vector2, to: Vector2, bidirectional: bool = true):
 	astar.connect_points(coord_ids[from], coord_ids[to], bidirectional)
 
 func disconnect_coords(from: Vector2, to: Vector2):
-	if not from in coord_ids or not to in coord_ids:
-		return
+#	if not from in coord_ids or not to in coord_ids:
+#		return
 	astar.disconnect_points(coord_ids[from], coord_ids[to])
 
 func get_accessible_coords(coord: Vector2) -> Array:
@@ -113,3 +116,8 @@ func get_diagonal_coords(coord: Vector2) -> Array:
 
 func is_tile_type_walkable(type: String):
 	return map.is_tile_type_walkable(type)
+
+func create_line(path: PoolVector2Array):
+	var line: Line2D = Line2D.new()
+	line.points = path
+	add_child(line)

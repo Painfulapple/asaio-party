@@ -47,6 +47,7 @@ func preview_tiles_from_array(array: Array, type: String):
 		if not coord in array:
 			preview_tile_nodes[coord].hide()
 			preview_tile_nodes[coord].queue_free()
+# warning-ignore:return_value_discarded
 			preview_tile_nodes.erase(coord)
 
 func preview_tile(pos: Vector2, type: String) -> Sprite:
